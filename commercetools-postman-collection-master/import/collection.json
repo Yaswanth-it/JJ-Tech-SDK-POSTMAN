@@ -1,0 +1,1901 @@
+{
+    "info": {
+        "_postman_id": "f367b534-c9ea-e7c5-1f46-7a27dc6a30ba",
+        "name": "commercetools Composable Commerce Import API",
+        "description": "# commercetools API Postman Collection\n\nThis Postman collection contains examples of requests and responses for most endpoints and commands of the\ncommercetools Composable Commerce Import API. For every command the smallest possible payload is given. Please find optional\nfields in the related official documentation. Additionally the collection provides example requests and\nresponses for specific tasks and more complex data models.\n\n## Disclaimer\n\nThis is not the official commercetools Composable Commerce Import API documentation. Please see [here](http:\/\/docs.commercetools.com\/)\nfor a complete and approved documentation of the commercetools Composable Commerce Import API.\n\n## How to use\n\n**:warning: Be aware that postman automatically synchronizes environment variables (including your API client credentials) to your workspace if logged in.\nUse this collection only for development purposes and non-production projects.**\n\nTo use this collection in Postman please perform the following steps:\n\n1. Download and install the Postman Client\n2. Import the [collection.json](collection.json) and [template.json](template.json) in your postman application\n3. In the Merchant Center, create a new API Client and fill in the client credentials in your environment\n4. Obtain an access token by sending the \"Authorization\/Obtain access token\" request at the bottom of the request list. Now you can use all other endpoints\n\nFeel free to clone and modify this collection to your needs.\n\nTo automate frequent tasks the collection automatically manages commonly required values and parameters such\nas resource ids, keys and versions in Postman environment variables for you.\n\nPlease see http:\/\/docs.commercetools.com\/ for further information about the commercetools Plattform.",
+        "schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+    },
+    "auth":
+        {
+            "type": "oauth2",
+            "oauth2": {
+                "accessToken": "{{ctp_access_token}}",
+                "addTokenTo": "header",
+                "tokenType": "Bearer"
+            }
+        },
+    "item": [
+        {
+            "name": "Authorization",
+            "description": "Authorization",
+            "item": [
+                {
+                    "name": "Obtain access token",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "tests[\"Status code is 200\"] = responseCode.code === 200;",
+                                    "var data = JSON.parse(responseBody);",
+                                    "if(data.access_token){",
+                                    "    pm.environment.set(\"ctp_access_token\", data.access_token);",
+                                    "}",
+                                    "if (data.scope) {",
+                                    "    parts = data.scope.split(\" \");",
+                                    "    parts = parts.filter(scope => scope.includes(\":\")).map(scope => scope.split(\":\"))",
+                                    "    if (parts.length > 0) {",
+                                    "        scopeParts = parts[0];",
+                                    "        pm.environment.set(\"project-key\", scopeParts[1]);",
+                                    "        parts = parts.filter(scope => scope.length >= 3)",
+                                    "        if (parts.length > 0) {",
+                                    "            scopeParts = parts[0];",
+                                    "            pm.environment.set(\"store-key\", scopeParts[2]);",
+                                    "        }",
+                                    "    }",
+                                    "}"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "auth": {
+                            "type": "basic",
+                            "basic": {
+                                "username": "{{client_id}}",
+                                "password": "{{client_secret}}"
+                            }
+                        },
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": ""
+                        },
+                        "url": {
+                            "raw": "{{auth_url}}/oauth/token?grant_type=client_credentials",
+                            "host": [
+                                "{{auth_url}}"
+                            ],
+                            "path": [
+                                "oauth",
+                                "token"
+                            ],
+                            "query": [
+                                {
+                                    "key": "grant_type",
+                                    "value": "client_credentials",
+                                    "equals": true
+                                }
+                            ]
+                        },
+                        "description": "Use this request to obtain an access token for your commercetools platform project via Client Credentials Flow. As a prerequisite you must have filled out environment variables in Postman for projectKey, client_id and client_secret to use this."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Obtain access token through password flow",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "tests[\"Status code is 200\"] = responseCode.code === 200;",
+                                    "var data = JSON.parse(responseBody);",
+                                    "if(data.access_token){",
+                                    "    pm.environment.set(\"ctp_access_token\", data.access_token);",
+                                    "}",
+                                    "if (data.scope) {",
+                                    "    parts = data.scope.split(\" \");",
+                                    "    parts = parts.filter(scope => scope.includes(\":\")).map(scope => scope.split(\":\"))",
+                                    "    if (parts.length > 0) {",
+                                    "        scopeParts = parts[0];",
+                                    "        pm.environment.set(\"project-key\", scopeParts[1]);",
+                                    "        parts = parts.filter(scope => scope.length >= 3)",
+                                    "        if (parts.length > 0) {",
+                                    "            scopeParts = parts[0];",
+                                    "            pm.environment.set(\"store-key\", scopeParts[2]);",
+                                    "        }",
+                                    "    }",
+                                    "}"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "auth": {
+                            "type": "basic",
+                            "basic": {
+                                "username": "{{client_id}}",
+                                "password": "{{client_secret}}"
+                            }
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "",
+                                "value": "",
+                                "disabled": true
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": ""
+                        },
+                        "url": {
+                            "raw": "{{auth_url}}/oauth/{{project-key}}/customers/token?grant_type=password&username={{user_email}}&password={{user_password}}",
+                            "host": [
+                                "{{auth_url}}"
+                            ],
+                            "path": [
+                                "oauth",
+                                "{{project-key}}",
+                                "customers",
+                                "token"
+                            ],
+                            "query": [
+                                {
+                                    "key": "grant_type",
+                                    "value": "password",
+                                    "equals": true
+                                },
+                                {
+                                    "key": "username",
+                                    "value": "",
+                                    "equals": true
+                                },
+                                {
+                                    "key": "password",
+                                    "value": "",
+                                    "equals": true
+                                }
+                            ]
+                        },
+                        "description": "Use this request to obtain an access token for your commercetools platform project via Password Flow. As a prerequisite you must have filled out environment variables in Postman for projectKey, client_id, client_secret, user_email and user_password to use this."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Token for Anonymous Sessions",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "tests[\"Status code is 200\"] = responseCode.code === 200;",
+                                    "var data = JSON.parse(responseBody);",
+                                    "if(data.access_token){",
+                                    "    pm.environment.set(\"ctp_access_token\", data.access_token);",
+                                    "}",
+                                    "if (data.scope) {",
+                                    "    parts = data.scope.split(\" \");",
+                                    "    parts = parts.filter(scope => scope.includes(\":\")).map(scope => scope.split(\":\"))",
+                                    "    if (parts.length > 0) {",
+                                    "        scopeParts = parts[0];",
+                                    "        pm.environment.set(\"project-key\", scopeParts[1]);",
+                                    "        parts = parts.filter(scope => scope.length >= 3)",
+                                    "        if (parts.length > 0) {",
+                                    "            scopeParts = parts[0];",
+                                    "            pm.environment.set(\"store-key\", scopeParts[2]);",
+                                    "        }",
+                                    "    }",
+                                    "}"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "auth": {
+                            "type": "basic",
+                            "basic": {
+                                "username": "{{client_id}}",
+                                "password": "{{client_secret}}"
+                            }
+                        },
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": ""
+                        },
+                        "url": {
+                            "raw": "{{auth_url}}/oauth/{{project-key}}/anonymous/token?grant_type=client_credentials",
+                            "host": [
+                                "{{auth_url}}"
+                            ],
+                            "path": [
+                                "oauth",
+                                "{{project-key}}",
+                                "anonymous",
+                                "token"
+                            ],
+                            "query": [
+                                {
+                                    "key": "grant_type",
+                                    "value": "client_credentials",
+                                    "equals": true
+                                }
+                            ]
+                        },
+                        "description": "Use this request to obtain an access token for a anonymous session. As a prerequisite you must have filled out environment variables in Postman for projectKey, client_id and client_secret to use this."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Token Introspection",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "tests[\"Status code is 200\"] = responseCode.code === 200;"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "auth": {
+                            "type": "basic",
+                            "basic": {
+                                "username": "{{client_id}}",
+                                "password": "{{client_secret}}"
+                            }
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": ""
+                        },
+                        "url": {
+                            "raw": "{{auth_url}}/oauth/introspect?token={{ctp_access_token}}",
+                            "host": [
+                                "{{auth_url}}"
+                            ],
+                            "path": [
+                                "oauth",
+                                "introspect"
+                            ],
+                            "query": [
+                                {
+                                    "key": "token",
+                                    "value": "{{ctp_access_token}}",
+                                    "equals": true
+                                }
+                            ]
+                        },
+                        "description": "Token introspection allows to determine the active state of an OAuth 2.0 access token and to determine meta-information about this accces token, such as the `scope`."
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "Project",
+            "description": "null",
+            "item": [
+                {
+                    "name": "Import-containers",
+                    "description": "null",
+                    "item": [
+                        {
+                            "name": "Query import-summaries",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "type": "text/javascript",
+                                        "exec": [
+                                            "tests[\"Status code \" + responseCode.code] = responseCode.code === 200 || responseCode.code === 201;",
+                                            "var data = JSON.parse(responseBody);",
+                                            "if(data.results && data.results[0] && data.results[0].id && data.results[0].version){",
+                                            "    pm.environment.set(\"import-summary-id\", data.results[0].id); ",
+                                            "    pm.environment.set(\"import-summary-version\", data.results[0].version);",
+                                            "}",
+                                            "if(data.results && data.results[0] && data.results[0].key){",
+                                            "    pm.environment.set(\"import-summary-key\", data.results[0].key); ",
+                                            "}",
+                                            "if(data.version){",
+                                            "    pm.environment.set(\"import-summary-version\", data.version);",
+                                            "}",
+                                            "if(data.id){",
+                                            "    pm.environment.set(\"import-summary-id\", data.id); ",
+                                            "}",
+                                            "if(data.key){",
+                                            "    pm.environment.set(\"import-summary-key\", data.key);",
+                                            "}",
+                                            ""
+                                        ]
+                                    }
+                                }
+                            ],
+                            "request": {
+                                "auth":
+                                    {
+                                        "type": "oauth2",
+                                        "oauth2": {
+                                            "accessToken": "{{ctp_access_token}}",
+                                            "addTokenTo": "header",
+                                            "tokenType": "Bearer"
+                                        }
+                                    },
+                                "method": "get",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{host}}/{{project-key}}/import-containers/{{import-container-key}}/import-summaries",
+                                    "host": [
+                                        "{{host}}"
+                                    ],
+                                    "path": [
+                                        "{{project-key}}",
+                                        "import-containers",
+                                        "{{import-container-key}}",
+                                        "import-summaries"
+                                    ],
+                                    "query": [
+                                    ]
+                                },
+                                "description": "Retrieves an [ImportSummary](ctp:import:type:ImportSummary) for the given import container. An [ImportSummary](ctp:import:type:ImportSummary) is calculated on demand.\n",
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": ""
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Query import-operations",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "type": "text/javascript",
+                                        "exec": [
+                                            "tests[\"Status code \" + responseCode.code] = responseCode.code === 200 || responseCode.code === 201;",
+                                            "var data = JSON.parse(responseBody);",
+                                            "if(data.results && data.results[0] && data.results[0].id && data.results[0].version){",
+                                            "    pm.environment.set(\"import-operation-id\", data.results[0].id); ",
+                                            "    pm.environment.set(\"import-operation-version\", data.results[0].version);",
+                                            "}",
+                                            "if(data.results && data.results[0] && data.results[0].key){",
+                                            "    pm.environment.set(\"import-operation-key\", data.results[0].key); ",
+                                            "}",
+                                            "if(data.version){",
+                                            "    pm.environment.set(\"import-operation-version\", data.version);",
+                                            "}",
+                                            "if(data.id){",
+                                            "    pm.environment.set(\"import-operation-id\", data.id); ",
+                                            "}",
+                                            "if(data.key){",
+                                            "    pm.environment.set(\"import-operation-key\", data.key);",
+                                            "}",
+                                            ""
+                                        ]
+                                    }
+                                }
+                            ],
+                            "request": {
+                                "auth":
+                                    {
+                                        "type": "oauth2",
+                                        "oauth2": {
+                                            "accessToken": "{{ctp_access_token}}",
+                                            "addTokenTo": "header",
+                                            "tokenType": "Bearer"
+                                        }
+                                    },
+                                "method": "get",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{host}}/{{project-key}}/import-containers/{{import-container-key}}/import-operations",
+                                    "host": [
+                                        "{{host}}"
+                                    ],
+                                    "path": [
+                                        "{{project-key}}",
+                                        "import-containers",
+                                        "{{import-container-key}}",
+                                        "import-operations"
+                                    ],
+                                    "query": [
+                                        {
+                                            "key": "limit",
+                                            "value": "",
+                                            "equals": true,
+                                            "disabled": true
+                                        },
+                                        {
+                                            "key": "offset",
+                                            "value": "",
+                                            "equals": true,
+                                            "disabled": true
+                                        },
+                                        {
+                                            "key": "sort",
+                                            "value": "",
+                                            "equals": true,
+                                            "disabled": true
+                                        },
+                                        {
+                                            "key": "resourceKey",
+                                            "value": "",
+                                            "equals": true,
+                                            "disabled": true
+                                        },
+                                        {
+                                            "key": "state",
+                                            "value": "",
+                                            "equals": true,
+                                            "disabled": true
+                                        },
+                                        {
+                                            "key": "debug",
+                                            "value": "",
+                                            "equals": true,
+                                            "disabled": true
+                                        }
+                                    ]
+                                },
+                                "description": "Retrieves all [ImportOperations](ctp:import:type:ImportOperation) of a given ImportContainer key.\n",
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": ""
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Update import-container",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "type": "text/javascript",
+                                        "exec": [
+                                            "tests[\"Status code \" + responseCode.code] = responseCode.code === 200 || responseCode.code === 201;",
+                                            "var data = JSON.parse(responseBody);",
+                                            "if(data.results && data.results[0] && data.results[0].id && data.results[0].version){",
+                                            "    pm.environment.set(\"import-container-id\", data.results[0].id); ",
+                                            "    pm.environment.set(\"import-container-version\", data.results[0].version);",
+                                            "}",
+                                            "if(data.results && data.results[0] && data.results[0].key){",
+                                            "    pm.environment.set(\"import-container-key\", data.results[0].key); ",
+                                            "}",
+                                            "if(data.version){",
+                                            "    pm.environment.set(\"import-container-version\", data.version);",
+                                            "}",
+                                            "if(data.id){",
+                                            "    pm.environment.set(\"import-container-id\", data.id); ",
+                                            "}",
+                                            "if(data.key){",
+                                            "    pm.environment.set(\"import-container-key\", data.key);",
+                                            "}",
+                                            ""
+                                        ]
+                                    }
+                                }
+                            ],
+                            "request": {
+                                "auth":
+                                    {
+                                        "type": "oauth2",
+                                        "oauth2": {
+                                            "accessToken": "{{ctp_access_token}}",
+                                            "addTokenTo": "header",
+                                            "tokenType": "Bearer"
+                                        }
+                                    },
+                                "method": "put",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{host}}/{{project-key}}/import-containers/{{import-container-key}}",
+                                    "host": [
+                                        "{{host}}"
+                                    ],
+                                    "path": [
+                                        "{{project-key}}",
+                                        "import-containers",
+                                        "{{import-container-key}}"
+                                    ],
+                                    "query": [
+                                    ]
+                                },
+                                "description": "Updates the import container given by the key.",
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"version\" : 1,\n  \"resourceType\" : \"product\"\n}"
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Get import-container",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "type": "text/javascript",
+                                        "exec": [
+                                            "tests[\"Status code \" + responseCode.code] = responseCode.code === 200 || responseCode.code === 201;",
+                                            "var data = JSON.parse(responseBody);",
+                                            "if(data.results && data.results[0] && data.results[0].id && data.results[0].version){",
+                                            "    pm.environment.set(\"import-container-id\", data.results[0].id); ",
+                                            "    pm.environment.set(\"import-container-version\", data.results[0].version);",
+                                            "}",
+                                            "if(data.results && data.results[0] && data.results[0].key){",
+                                            "    pm.environment.set(\"import-container-key\", data.results[0].key); ",
+                                            "}",
+                                            "if(data.version){",
+                                            "    pm.environment.set(\"import-container-version\", data.version);",
+                                            "}",
+                                            "if(data.id){",
+                                            "    pm.environment.set(\"import-container-id\", data.id); ",
+                                            "}",
+                                            "if(data.key){",
+                                            "    pm.environment.set(\"import-container-key\", data.key);",
+                                            "}",
+                                            ""
+                                        ]
+                                    }
+                                }
+                            ],
+                            "request": {
+                                "auth":
+                                    {
+                                        "type": "oauth2",
+                                        "oauth2": {
+                                            "accessToken": "{{ctp_access_token}}",
+                                            "addTokenTo": "header",
+                                            "tokenType": "Bearer"
+                                        }
+                                    },
+                                "method": "get",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{host}}/{{project-key}}/import-containers/{{import-container-key}}",
+                                    "host": [
+                                        "{{host}}"
+                                    ],
+                                    "path": [
+                                        "{{project-key}}",
+                                        "import-containers",
+                                        "{{import-container-key}}"
+                                    ],
+                                    "query": [
+                                    ]
+                                },
+                                "description": "Retrieves the import container given by the key.",
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": ""
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Delete import-container",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "type": "text/javascript",
+                                        "exec": [
+                                            "tests[\"Status code \" + responseCode.code] = responseCode.code === 200 || responseCode.code === 201;",
+                                            "var data = JSON.parse(responseBody);",
+                                            "if(data.results && data.results[0] && data.results[0].id && data.results[0].version){",
+                                            "    pm.environment.set(\"import-container-id\", data.results[0].id); ",
+                                            "    pm.environment.set(\"import-container-version\", data.results[0].version);",
+                                            "}",
+                                            "if(data.results && data.results[0] && data.results[0].key){",
+                                            "    pm.environment.set(\"import-container-key\", data.results[0].key); ",
+                                            "}",
+                                            "if(data.version){",
+                                            "    pm.environment.set(\"import-container-version\", data.version);",
+                                            "}",
+                                            "if(data.id){",
+                                            "    pm.environment.set(\"import-container-id\", data.id); ",
+                                            "}",
+                                            "if(data.key){",
+                                            "    pm.environment.set(\"import-container-key\", data.key);",
+                                            "}",
+                                            ""
+                                        ]
+                                    }
+                                }
+                            ],
+                            "request": {
+                                "auth":
+                                    {
+                                        "type": "oauth2",
+                                        "oauth2": {
+                                            "accessToken": "{{ctp_access_token}}",
+                                            "addTokenTo": "header",
+                                            "tokenType": "Bearer"
+                                        }
+                                    },
+                                "method": "delete",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{host}}/{{project-key}}/import-containers/{{import-container-key}}",
+                                    "host": [
+                                        "{{host}}"
+                                    ],
+                                    "path": [
+                                        "{{project-key}}",
+                                        "import-containers",
+                                        "{{import-container-key}}"
+                                    ],
+                                    "query": [
+                                    ]
+                                },
+                                "description": "Deletes the import container given by the key.",
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": ""
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Creates a new import container.",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "type": "text/javascript",
+                                        "exec": [
+                                            "tests[\"Status code \" + responseCode.code] = responseCode.code === 200 || responseCode.code === 201;",
+                                            "var data = JSON.parse(responseBody);",
+                                            "if(data.results && data.results[0] && data.results[0].id && data.results[0].version){",
+                                            "    pm.environment.set(\"import-container-id\", data.results[0].id); ",
+                                            "    pm.environment.set(\"import-container-version\", data.results[0].version);",
+                                            "}",
+                                            "if(data.results && data.results[0] && data.results[0].key){",
+                                            "    pm.environment.set(\"import-container-key\", data.results[0].key); ",
+                                            "}",
+                                            "if(data.version){",
+                                            "    pm.environment.set(\"import-container-version\", data.version);",
+                                            "}",
+                                            "if(data.id){",
+                                            "    pm.environment.set(\"import-container-id\", data.id); ",
+                                            "}",
+                                            "if(data.key){",
+                                            "    pm.environment.set(\"import-container-key\", data.key);",
+                                            "}",
+                                            ""
+                                        ]
+                                    }
+                                }
+                            ],
+                            "request": {
+                                "auth":
+                                    {
+                                        "type": "oauth2",
+                                        "oauth2": {
+                                            "accessToken": "{{ctp_access_token}}",
+                                            "addTokenTo": "header",
+                                            "tokenType": "Bearer"
+                                        }
+                                    },
+                                "method": "post",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{host}}/{{project-key}}/import-containers",
+                                    "host": [
+                                        "{{host}}"
+                                    ],
+                                    "path": [
+                                        "{{project-key}}",
+                                        "import-containers"
+                                    ],
+                                    "query": [
+                                    ]
+                                },
+                                "description": "Creates a new import container.",
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"key\" : \"my-import-container\"\n}"
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "get ByProjectKeyImportContainers",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "type": "text/javascript",
+                                        "exec": [
+                                            "tests[\"Status code \" + responseCode.code] = responseCode.code === 200 || responseCode.code === 201;",
+                                            "var data = JSON.parse(responseBody);",
+                                            "if(data.results && data.results[0] && data.results[0].id && data.results[0].version){",
+                                            "    pm.environment.set(\"import-container-id\", data.results[0].id); ",
+                                            "    pm.environment.set(\"import-container-version\", data.results[0].version);",
+                                            "}",
+                                            "if(data.results && data.results[0] && data.results[0].key){",
+                                            "    pm.environment.set(\"import-container-key\", data.results[0].key); ",
+                                            "}",
+                                            "if(data.version){",
+                                            "    pm.environment.set(\"import-container-version\", data.version);",
+                                            "}",
+                                            "if(data.id){",
+                                            "    pm.environment.set(\"import-container-id\", data.id); ",
+                                            "}",
+                                            "if(data.key){",
+                                            "    pm.environment.set(\"import-container-key\", data.key);",
+                                            "}",
+                                            ""
+                                        ]
+                                    }
+                                }
+                            ],
+                            "request": {
+                                "auth":
+                                    {
+                                        "type": "oauth2",
+                                        "oauth2": {
+                                            "accessToken": "{{ctp_access_token}}",
+                                            "addTokenTo": "header",
+                                            "tokenType": "Bearer"
+                                        }
+                                    },
+                                "method": "get",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{host}}/{{project-key}}/import-containers",
+                                    "host": [
+                                        "{{host}}"
+                                    ],
+                                    "path": [
+                                        "{{project-key}}",
+                                        "import-containers"
+                                    ],
+                                    "query": [
+                                        {
+                                            "key": "limit",
+                                            "value": "",
+                                            "equals": true,
+                                            "disabled": true
+                                        },
+                                        {
+                                            "key": "offset",
+                                            "value": "",
+                                            "equals": true,
+                                            "disabled": true
+                                        },
+                                        {
+                                            "key": "sort",
+                                            "value": "",
+                                            "equals": true,
+                                            "disabled": true
+                                        }
+                                    ]
+                                },
+                                "description": "Retrieves all import containers of a given project key.",
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": ""
+                                }
+                            },
+                            "response": []
+                        }
+                    ]
+                },
+                {
+                    "name": "Import-operations",
+                    "description": "null",
+                    "item": [
+                        {
+                            "name": "Get import-operation",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "type": "text/javascript",
+                                        "exec": [
+                                            "tests[\"Status code \" + responseCode.code] = responseCode.code === 200 || responseCode.code === 201;",
+                                            "var data = JSON.parse(responseBody);",
+                                            "if(data.results && data.results[0] && data.results[0].id && data.results[0].version){",
+                                            "    pm.environment.set(\"import-operation-id\", data.results[0].id); ",
+                                            "    pm.environment.set(\"import-operation-version\", data.results[0].version);",
+                                            "}",
+                                            "if(data.results && data.results[0] && data.results[0].key){",
+                                            "    pm.environment.set(\"import-operation-key\", data.results[0].key); ",
+                                            "}",
+                                            "if(data.version){",
+                                            "    pm.environment.set(\"import-operation-version\", data.version);",
+                                            "}",
+                                            "if(data.id){",
+                                            "    pm.environment.set(\"import-operation-id\", data.id); ",
+                                            "}",
+                                            "if(data.key){",
+                                            "    pm.environment.set(\"import-operation-key\", data.key);",
+                                            "}",
+                                            ""
+                                        ]
+                                    }
+                                }
+                            ],
+                            "request": {
+                                "auth":
+                                    {
+                                        "type": "oauth2",
+                                        "oauth2": {
+                                            "accessToken": "{{ctp_access_token}}",
+                                            "addTokenTo": "header",
+                                            "tokenType": "Bearer"
+                                        }
+                                    },
+                                "method": "get",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{host}}/{{project-key}}/import-operations/{{id}}",
+                                    "host": [
+                                        "{{host}}"
+                                    ],
+                                    "path": [
+                                        "{{project-key}}",
+                                        "import-operations",
+                                        "{{id}}"
+                                    ],
+                                    "query": [
+                                    ]
+                                },
+                                "description": "Retrieves the [ImportOperation](ctp:import:type:ImportOperation) of a given ID.\n",
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": ""
+                                }
+                            },
+                            "response": []
+                        }
+                    ]
+                },
+                {
+                    "name": "Categories",
+                    "description": "null",
+                    "item": [
+                        {
+                            "name": "Import-containers",
+                            "description": "null",
+                            "item": [
+                                {
+                                    "name": "Import import-container",
+                                    "event": [
+                                        {
+                                            "listen": "test",
+                                            "script": {
+                                                "type": "text/javascript",
+                                                "exec": [
+                                                    "tests[\"Status code \" + responseCode.code] = responseCode.code === 200 || responseCode.code === 201;",
+                                                    "var data = JSON.parse(responseBody);",
+                                                    "if(data.results && data.results[0] && data.results[0].id && data.results[0].version){",
+                                                    "    pm.environment.set(\"import-container-id\", data.results[0].id); ",
+                                                    "    pm.environment.set(\"import-container-version\", data.results[0].version);",
+                                                    "}",
+                                                    "if(data.results && data.results[0] && data.results[0].key){",
+                                                    "    pm.environment.set(\"import-container-key\", data.results[0].key); ",
+                                                    "}",
+                                                    "if(data.version){",
+                                                    "    pm.environment.set(\"import-container-version\", data.version);",
+                                                    "}",
+                                                    "if(data.id){",
+                                                    "    pm.environment.set(\"import-container-id\", data.id); ",
+                                                    "}",
+                                                    "if(data.key){",
+                                                    "    pm.environment.set(\"import-container-key\", data.key);",
+                                                    "}",
+                                                    ""
+                                                ]
+                                            }
+                                        }
+                                    ],
+                                    "request": {
+                                        "auth":
+                                            {
+                                                "type": "oauth2",
+                                                "oauth2": {
+                                                    "accessToken": "{{ctp_access_token}}",
+                                                    "addTokenTo": "header",
+                                                    "tokenType": "Bearer"
+                                                }
+                                            },
+                                        "method": "post",
+                                        "header": [
+                                            {
+                                                "key": "Content-Type",
+                                                "value": "application/json"
+                                            }
+                                        ],
+                                        "url": {
+                                            "raw": "{{host}}/{{project-key}}/categories/import-containers/{{import-container-key}}",
+                                            "host": [
+                                                "{{host}}"
+                                            ],
+                                            "path": [
+                                                "{{project-key}}",
+                                                "categories",
+                                                "import-containers",
+                                                "{{import-container-key}}"
+                                            ],
+                                            "query": [
+                                            ]
+                                        },
+                                        "description": "Creates a request for creating new Categories or updating existing ones.",
+                                        "body": {
+                                            "mode": "raw",
+                                            "raw": "{\n  \"type\" : \"category\",\n  \"resources\" : [ {\n    \"key\" : \"greatTestCat\",\n    \"name\" : {\n      \"en\" : \"greatTestCat\"\n    },\n    \"slug\" : {\n      \"en\" : \"great-slug\"\n    },\n    \"description\" : {\n      \"de\" : \"Beschreibung der Kategorie\",\n      \"en\" : \"category's description\"\n    },\n    \"parent\" : {\n      \"typeId\" : \"category\",\n      \"key\" : \"category-key\"\n    },\n    \"orderHint\" : \"category's order hint\",\n    \"externalId\" : \"external-id\",\n    \"metaTitle\" : {\n      \"de\" : \"der Metatitel der Katze\",\n      \"en\" : \"the cat's meta title\"\n    },\n    \"metaDescription\" : {\n      \"de\" : \"die Meta-Beschreibung der Katze\",\n      \"en\" : \"the cat's meta description\"\n    },\n    \"metaKeywords\" : {\n      \"de\" : \"die Schl\u00FCsselw\u00F6rter der Katze\",\n      \"en\" : \"the cat's key words\"\n    },\n    \"assets\" : [ {\n      \"key\" : \"asset-key\",\n      \"sources\" : [ {\n        \"uri\" : \"https:\/\/google.com\",\n        \"key\" : \"asset-source-key\",\n        \"dimensions\" : {\n          \"w\" : 12,\n          \"h\" : 10\n        },\n        \"contentType\" : \"dummy content type\"\n      } ],\n      \"name\" : {\n        \"de\" : \"Asset-Name\",\n        \"en\" : \"asset name\"\n      },\n      \"description\" : {\n        \"de\" : \"Asset-Beschreibung\",\n        \"en\" : \"asset description\"\n      },\n      \"tags\" : [ \"tag 1\" ],\n      \"custom\" : {\n        \"type\" : {\n          \"key\" : \"custom-type\",\n          \"typeId\" : \"type\"\n        },\n        \"fields\" : {\n          \"boolean-field\" : {\n            \"type\" : \"Boolean\",\n            \"value\" : false\n          }\n        }\n      }\n    } ],\n    \"custom\" : {\n      \"type\" : {\n        \"typeId\" : \"type\",\n        \"key\" : \"custom-type\"\n      },\n      \"fields\" : {\n        \"boolean-field\" : {\n          \"type\" : \"Boolean\",\n          \"value\" : true\n        },\n        \"string-field\" : {\n          \"type\" : \"String\",\n          \"value\" : \"a string\"\n        }\n      }\n    }\n  } ]\n}"
+                                        }
+                                    },
+                                    "response": []
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Prices",
+                    "description": "null",
+                    "item": [
+                        {
+                            "name": "Import-containers",
+                            "description": "null",
+                            "item": [
+                                {
+                                    "name": "Import import-container",
+                                    "event": [
+                                        {
+                                            "listen": "test",
+                                            "script": {
+                                                "type": "text/javascript",
+                                                "exec": [
+                                                    "tests[\"Status code \" + responseCode.code] = responseCode.code === 200 || responseCode.code === 201;",
+                                                    "var data = JSON.parse(responseBody);",
+                                                    "if(data.results && data.results[0] && data.results[0].id && data.results[0].version){",
+                                                    "    pm.environment.set(\"import-container-id\", data.results[0].id); ",
+                                                    "    pm.environment.set(\"import-container-version\", data.results[0].version);",
+                                                    "}",
+                                                    "if(data.results && data.results[0] && data.results[0].key){",
+                                                    "    pm.environment.set(\"import-container-key\", data.results[0].key); ",
+                                                    "}",
+                                                    "if(data.version){",
+                                                    "    pm.environment.set(\"import-container-version\", data.version);",
+                                                    "}",
+                                                    "if(data.id){",
+                                                    "    pm.environment.set(\"import-container-id\", data.id); ",
+                                                    "}",
+                                                    "if(data.key){",
+                                                    "    pm.environment.set(\"import-container-key\", data.key);",
+                                                    "}",
+                                                    ""
+                                                ]
+                                            }
+                                        }
+                                    ],
+                                    "request": {
+                                        "auth":
+                                            {
+                                                "type": "oauth2",
+                                                "oauth2": {
+                                                    "accessToken": "{{ctp_access_token}}",
+                                                    "addTokenTo": "header",
+                                                    "tokenType": "Bearer"
+                                                }
+                                            },
+                                        "method": "post",
+                                        "header": [
+                                            {
+                                                "key": "Content-Type",
+                                                "value": "application/json"
+                                            }
+                                        ],
+                                        "url": {
+                                            "raw": "{{host}}/{{project-key}}/prices/import-containers/{{import-container-key}}",
+                                            "host": [
+                                                "{{host}}"
+                                            ],
+                                            "path": [
+                                                "{{project-key}}",
+                                                "prices",
+                                                "import-containers",
+                                                "{{import-container-key}}"
+                                            ],
+                                            "query": [
+                                            ]
+                                        },
+                                        "description": "Creates a request for creating new Prices or updating existing ones.",
+                                        "body": {
+                                            "mode": "raw",
+                                            "raw": "{\n  \"type\" : \"price\",\n  \"resources\" : [ {\n    \"key\" : \"bigPriceKeyTestCat\",\n    \"country\" : \"DE\",\n    \"validFrom\" : \"2021-04-11T14:00:00.000Z\",\n    \"validUntil\" : \"2022-04-11T14:00:00.000Z\",\n    \"customerGroup\" : {\n      \"typeId\" : \"customer-group\",\n      \"key\" : \"customer-group-key\"\n    },\n    \"channel\" : {\n      \"typeId\" : \"channel\",\n      \"key\" : \"channel-key\"\n    },\n    \"discounted\" : {\n      \"value\" : {\n        \"type\" : \"centPrecision\",\n        \"currencyCode\" : \"EUR\",\n        \"centAmount\" : 251\n      },\n      \"discount\" : {\n        \"typeId\" : \"product-discount\",\n        \"key\" : \"product-discount-key\"\n      }\n    },\n    \"tiers\" : [ {\n      \"minimumQuantity\" : 5,\n      \"value\" : {\n        \"type\" : \"centPrecision\",\n        \"currencyCode\" : \"EUR\",\n        \"centAmount\" : 80\n      }\n    } ],\n    \"productVariant\" : {\n      \"typeId\" : \"product-variant\",\n      \"key\" : \"red-t-shirt\"\n    },\n    \"product\" : {\n      \"typeId\" : \"product\",\n      \"key\" : \"t-shirt\"\n    },\n    \"value\" : {\n      \"type\" : \"centPrecision\",\n      \"currencyCode\" : \"EUR\",\n      \"centAmount\" : 300\n    },\n    \"custom\" : {\n      \"type\" : {\n        \"typeId\" : \"type\",\n        \"key\" : \"custom-type\"\n      },\n      \"fields\" : {\n        \"customFieldName\" : {\n          \"type\" : \"String\",\n          \"value\" : \"customFieldValue\"\n        }\n      }\n    }\n  }, {\n    \"key\" : \"bigPriceKeyTestCat\",\n    \"country\" : \"DE\",\n    \"validFrom\" : \"2021-04-11T14:00:00.000Z\",\n    \"validUntil\" : \"2022-04-11T14:00:00.000Z\",\n    \"discounted\" : {\n      \"value\" : {\n        \"type\" : \"highPrecision\",\n        \"fractionDigits\" : 3,\n        \"preciseAmount\" : 2513,\n        \"currencyCode\" : \"EUR\",\n        \"centAmount\" : 1234\n      },\n      \"discount\" : {\n        \"typeId\" : \"product-discount\",\n        \"key\" : \"product-discount-key\"\n      }\n    },\n    \"tiers\" : [ {\n      \"minimumQuantity\" : 5,\n      \"value\" : {\n        \"type\" : \"centPrecision\",\n        \"currencyCode\" : \"EUR\",\n        \"centAmount\" : 80\n      }\n    } ],\n    \"productVariant\" : {\n      \"typeId\" : \"product-variant\",\n      \"key\" : \"red-t-shirt\"\n    },\n    \"product\" : {\n      \"typeId\" : \"product\",\n      \"key\" : \"t-shirt\"\n    },\n    \"value\" : {\n      \"type\" : \"centPrecision\",\n      \"currencyCode\" : \"EUR\",\n      \"centAmount\" : 300\n    }\n  } ]\n}"
+                                        }
+                                    },
+                                    "response": []
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Standalone-prices",
+                    "description": "null",
+                    "item": [
+                        {
+                            "name": "Import-containers",
+                            "description": "null",
+                            "item": [
+                                {
+                                    "name": "Import import-container",
+                                    "event": [
+                                        {
+                                            "listen": "test",
+                                            "script": {
+                                                "type": "text/javascript",
+                                                "exec": [
+                                                    "tests[\"Status code \" + responseCode.code] = responseCode.code === 200 || responseCode.code === 201;",
+                                                    "var data = JSON.parse(responseBody);",
+                                                    "if(data.results && data.results[0] && data.results[0].id && data.results[0].version){",
+                                                    "    pm.environment.set(\"import-container-id\", data.results[0].id); ",
+                                                    "    pm.environment.set(\"import-container-version\", data.results[0].version);",
+                                                    "}",
+                                                    "if(data.results && data.results[0] && data.results[0].key){",
+                                                    "    pm.environment.set(\"import-container-key\", data.results[0].key); ",
+                                                    "}",
+                                                    "if(data.version){",
+                                                    "    pm.environment.set(\"import-container-version\", data.version);",
+                                                    "}",
+                                                    "if(data.id){",
+                                                    "    pm.environment.set(\"import-container-id\", data.id); ",
+                                                    "}",
+                                                    "if(data.key){",
+                                                    "    pm.environment.set(\"import-container-key\", data.key);",
+                                                    "}",
+                                                    ""
+                                                ]
+                                            }
+                                        }
+                                    ],
+                                    "request": {
+                                        "auth":
+                                            {
+                                                "type": "oauth2",
+                                                "oauth2": {
+                                                    "accessToken": "{{ctp_access_token}}",
+                                                    "addTokenTo": "header",
+                                                    "tokenType": "Bearer"
+                                                }
+                                            },
+                                        "method": "post",
+                                        "header": [
+                                            {
+                                                "key": "Content-Type",
+                                                "value": "application/json"
+                                            }
+                                        ],
+                                        "url": {
+                                            "raw": "{{host}}/{{project-key}}/standalone-prices/import-containers/{{import-container-key}}",
+                                            "host": [
+                                                "{{host}}"
+                                            ],
+                                            "path": [
+                                                "{{project-key}}",
+                                                "standalone-prices",
+                                                "import-containers",
+                                                "{{import-container-key}}"
+                                            ],
+                                            "query": [
+                                            ]
+                                        },
+                                        "description": "Creates a request for creating new Standalone Prices or updating existing ones.",
+                                        "body": {
+                                            "mode": "raw",
+                                            "raw": "{\n  \"type\" : \"standalone-price\",\n  \"resources\" : [ {\n    \"key\" : \"priceKey\",\n    \"sku\" : \"variantSku\",\n    \"value\" : {\n      \"type\" : \"centPrecision\",\n      \"currencyCode\" : \"EUR\",\n      \"centAmount\" : 100\n    }\n  } ]\n}"
+                                        }
+                                    },
+                                    "response": []
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Products",
+                    "description": "null",
+                    "item": [
+                        {
+                            "name": "Import-containers",
+                            "description": "null",
+                            "item": [
+                                {
+                                    "name": "Import import-container",
+                                    "event": [
+                                        {
+                                            "listen": "test",
+                                            "script": {
+                                                "type": "text/javascript",
+                                                "exec": [
+                                                    "tests[\"Status code \" + responseCode.code] = responseCode.code === 200 || responseCode.code === 201;",
+                                                    "var data = JSON.parse(responseBody);",
+                                                    "if(data.results && data.results[0] && data.results[0].id && data.results[0].version){",
+                                                    "    pm.environment.set(\"import-container-id\", data.results[0].id); ",
+                                                    "    pm.environment.set(\"import-container-version\", data.results[0].version);",
+                                                    "}",
+                                                    "if(data.results && data.results[0] && data.results[0].key){",
+                                                    "    pm.environment.set(\"import-container-key\", data.results[0].key); ",
+                                                    "}",
+                                                    "if(data.version){",
+                                                    "    pm.environment.set(\"import-container-version\", data.version);",
+                                                    "}",
+                                                    "if(data.id){",
+                                                    "    pm.environment.set(\"import-container-id\", data.id); ",
+                                                    "}",
+                                                    "if(data.key){",
+                                                    "    pm.environment.set(\"import-container-key\", data.key);",
+                                                    "}",
+                                                    ""
+                                                ]
+                                            }
+                                        }
+                                    ],
+                                    "request": {
+                                        "auth":
+                                            {
+                                                "type": "oauth2",
+                                                "oauth2": {
+                                                    "accessToken": "{{ctp_access_token}}",
+                                                    "addTokenTo": "header",
+                                                    "tokenType": "Bearer"
+                                                }
+                                            },
+                                        "method": "post",
+                                        "header": [
+                                            {
+                                                "key": "Content-Type",
+                                                "value": "application/json"
+                                            }
+                                        ],
+                                        "url": {
+                                            "raw": "{{host}}/{{project-key}}/products/import-containers/{{import-container-key}}",
+                                            "host": [
+                                                "{{host}}"
+                                            ],
+                                            "path": [
+                                                "{{project-key}}",
+                                                "products",
+                                                "import-containers",
+                                                "{{import-container-key}}"
+                                            ],
+                                            "query": [
+                                            ]
+                                        },
+                                        "description": "Creates a request for creating new Products or updating existing ones.",
+                                        "body": {
+                                            "mode": "raw",
+                                            "raw": "{\n  \"type\" : \"product\",\n  \"resources\" : [ {\n    \"key\" : \"t-shirt\",\n    \"name\" : {\n      \"en\" : \"t-shirt\"\n    },\n    \"productType\" : {\n      \"typeId\" : \"product-type\",\n      \"key\" : \"sample\"\n    },\n    \"slug\" : {\n      \"en\" : \"t-shirt-slug\"\n    },\n    \"description\" : {\n      \"en\" : \"t-shirt-description\"\n    },\n    \"categories\" : [ {\n      \"typeId\" : \"category\",\n      \"key\" : \"greatTestCat\"\n    } ],\n    \"metaTitle\" : {\n      \"en\" : \"title\"\n    },\n    \"metaDescription\" : {\n      \"en\" : \"description\"\n    },\n    \"metaKeywords\" : {\n      \"en\" : \"Keywords\"\n    },\n    \"taxCategory\" : {\n      \"typeId\" : \"tax-category\",\n      \"key\" : \"tax-category-key\"\n    },\n    \"state\" : {\n      \"typeId\" : \"state\",\n      \"key\" : \"state-key\"\n    }\n  } ]\n}"
+                                        }
+                                    },
+                                    "response": []
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Product-drafts",
+                    "description": "null",
+                    "item": [
+                        {
+                            "name": "Import-containers",
+                            "description": "null",
+                            "item": [
+                                {
+                                    "name": "Import import-container",
+                                    "event": [
+                                        {
+                                            "listen": "test",
+                                            "script": {
+                                                "type": "text/javascript",
+                                                "exec": [
+                                                    "tests[\"Status code \" + responseCode.code] = responseCode.code === 200 || responseCode.code === 201;",
+                                                    "var data = JSON.parse(responseBody);",
+                                                    "if(data.results && data.results[0] && data.results[0].id && data.results[0].version){",
+                                                    "    pm.environment.set(\"import-container-id\", data.results[0].id); ",
+                                                    "    pm.environment.set(\"import-container-version\", data.results[0].version);",
+                                                    "}",
+                                                    "if(data.results && data.results[0] && data.results[0].key){",
+                                                    "    pm.environment.set(\"import-container-key\", data.results[0].key); ",
+                                                    "}",
+                                                    "if(data.version){",
+                                                    "    pm.environment.set(\"import-container-version\", data.version);",
+                                                    "}",
+                                                    "if(data.id){",
+                                                    "    pm.environment.set(\"import-container-id\", data.id); ",
+                                                    "}",
+                                                    "if(data.key){",
+                                                    "    pm.environment.set(\"import-container-key\", data.key);",
+                                                    "}",
+                                                    ""
+                                                ]
+                                            }
+                                        }
+                                    ],
+                                    "request": {
+                                        "auth":
+                                            {
+                                                "type": "oauth2",
+                                                "oauth2": {
+                                                    "accessToken": "{{ctp_access_token}}",
+                                                    "addTokenTo": "header",
+                                                    "tokenType": "Bearer"
+                                                }
+                                            },
+                                        "method": "post",
+                                        "header": [
+                                            {
+                                                "key": "Content-Type",
+                                                "value": "application/json"
+                                            }
+                                        ],
+                                        "url": {
+                                            "raw": "{{host}}/{{project-key}}/product-drafts/import-containers/{{import-container-key}}",
+                                            "host": [
+                                                "{{host}}"
+                                            ],
+                                            "path": [
+                                                "{{project-key}}",
+                                                "product-drafts",
+                                                "import-containers",
+                                                "{{import-container-key}}"
+                                            ],
+                                            "query": [
+                                            ]
+                                        },
+                                        "description": "Creates a request for creating new ProductDrafts or updating existing ones.\n",
+                                        "body": {
+                                            "mode": "raw",
+                                            "raw": "{\n  \"type\" : \"product-draft\",\n  \"resources\" : [ {\n    \"key\" : \"product-draft-key\",\n    \"name\" : {\n      \"en\" : \"blue shirt\"\n    },\n    \"slug\" : {\n      \"en\" : \"blue-t-shirt\"\n    },\n    \"productType\" : {\n      \"typeId\" : \"product-type\",\n      \"key\" : \"sample\"\n    },\n    \"masterVariant\" : {\n      \"key\" : \"master-variant-key\",\n      \"attributes\" : [ {\n        \"type\" : \"reference\",\n        \"name\" : \"product-ref-attribute\",\n        \"value\" : {\n          \"key\" : \"greatTestCat\",\n          \"typeId\" : \"category\"\n        }\n      }, {\n        \"type\" : \"reference\",\n        \"name\" : \"product-custom-object-ref-attribute\",\n        \"value\" : {\n          \"key\" : \"custom-object-key\",\n          \"container\" : \"custom-object-container-key\",\n          \"typeId\" : \"key-value-document\"\n        }\n      } ]\n    }\n  } ]\n}"
+                                        }
+                                    },
+                                    "response": []
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Product-types",
+                    "description": "null",
+                    "item": [
+                        {
+                            "name": "Import-containers",
+                            "description": "null",
+                            "item": [
+                                {
+                                    "name": "Import import-container",
+                                    "event": [
+                                        {
+                                            "listen": "test",
+                                            "script": {
+                                                "type": "text/javascript",
+                                                "exec": [
+                                                    "tests[\"Status code \" + responseCode.code] = responseCode.code === 200 || responseCode.code === 201;",
+                                                    "var data = JSON.parse(responseBody);",
+                                                    "if(data.results && data.results[0] && data.results[0].id && data.results[0].version){",
+                                                    "    pm.environment.set(\"import-container-id\", data.results[0].id); ",
+                                                    "    pm.environment.set(\"import-container-version\", data.results[0].version);",
+                                                    "}",
+                                                    "if(data.results && data.results[0] && data.results[0].key){",
+                                                    "    pm.environment.set(\"import-container-key\", data.results[0].key); ",
+                                                    "}",
+                                                    "if(data.version){",
+                                                    "    pm.environment.set(\"import-container-version\", data.version);",
+                                                    "}",
+                                                    "if(data.id){",
+                                                    "    pm.environment.set(\"import-container-id\", data.id); ",
+                                                    "}",
+                                                    "if(data.key){",
+                                                    "    pm.environment.set(\"import-container-key\", data.key);",
+                                                    "}",
+                                                    ""
+                                                ]
+                                            }
+                                        }
+                                    ],
+                                    "request": {
+                                        "auth":
+                                            {
+                                                "type": "oauth2",
+                                                "oauth2": {
+                                                    "accessToken": "{{ctp_access_token}}",
+                                                    "addTokenTo": "header",
+                                                    "tokenType": "Bearer"
+                                                }
+                                            },
+                                        "method": "post",
+                                        "header": [
+                                            {
+                                                "key": "Content-Type",
+                                                "value": "application/json"
+                                            }
+                                        ],
+                                        "url": {
+                                            "raw": "{{host}}/{{project-key}}/product-types/import-containers/{{import-container-key}}",
+                                            "host": [
+                                                "{{host}}"
+                                            ],
+                                            "path": [
+                                                "{{project-key}}",
+                                                "product-types",
+                                                "import-containers",
+                                                "{{import-container-key}}"
+                                            ],
+                                            "query": [
+                                            ]
+                                        },
+                                        "description": "Creates a request for creating new ProductTypes or updating existing ones.",
+                                        "body": {
+                                            "mode": "raw",
+                                            "raw": "{\n  \"type\" : \"product-type\",\n  \"resources\" : [ {\n    \"key\" : \"sample\",\n    \"name\" : \"test_product_type\",\n    \"description\" : \"Test product type.\",\n    \"attributes\" : [ {\n      \"name\" : \"product-ref-attribute\",\n      \"label\" : {\n        \"en\" : \"selling product\"\n      },\n      \"isRequired\" : false,\n      \"isSearchable\" : false,\n      \"type\" : {\n        \"name\" : \"reference\",\n        \"referenceTypeId\" : \"category\"\n      },\n      \"attributeConstraint\" : \"Unique\",\n      \"inputTip\" : {\n        \"en\" : \"product input tip\"\n      },\n      \"inputHint\" : \"SingleLine\"\n    } ]\n  } ]\n}"
+                                        }
+                                    },
+                                    "response": []
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Product-variants",
+                    "description": "null",
+                    "item": [
+                        {
+                            "name": "Import-containers",
+                            "description": "null",
+                            "item": [
+                                {
+                                    "name": "Import import-container",
+                                    "event": [
+                                        {
+                                            "listen": "test",
+                                            "script": {
+                                                "type": "text/javascript",
+                                                "exec": [
+                                                    "tests[\"Status code \" + responseCode.code] = responseCode.code === 200 || responseCode.code === 201;",
+                                                    "var data = JSON.parse(responseBody);",
+                                                    "if(data.results && data.results[0] && data.results[0].id && data.results[0].version){",
+                                                    "    pm.environment.set(\"import-container-id\", data.results[0].id); ",
+                                                    "    pm.environment.set(\"import-container-version\", data.results[0].version);",
+                                                    "}",
+                                                    "if(data.results && data.results[0] && data.results[0].key){",
+                                                    "    pm.environment.set(\"import-container-key\", data.results[0].key); ",
+                                                    "}",
+                                                    "if(data.version){",
+                                                    "    pm.environment.set(\"import-container-version\", data.version);",
+                                                    "}",
+                                                    "if(data.id){",
+                                                    "    pm.environment.set(\"import-container-id\", data.id); ",
+                                                    "}",
+                                                    "if(data.key){",
+                                                    "    pm.environment.set(\"import-container-key\", data.key);",
+                                                    "}",
+                                                    ""
+                                                ]
+                                            }
+                                        }
+                                    ],
+                                    "request": {
+                                        "auth":
+                                            {
+                                                "type": "oauth2",
+                                                "oauth2": {
+                                                    "accessToken": "{{ctp_access_token}}",
+                                                    "addTokenTo": "header",
+                                                    "tokenType": "Bearer"
+                                                }
+                                            },
+                                        "method": "post",
+                                        "header": [
+                                            {
+                                                "key": "Content-Type",
+                                                "value": "application/json"
+                                            }
+                                        ],
+                                        "url": {
+                                            "raw": "{{host}}/{{project-key}}/product-variants/import-containers/{{import-container-key}}",
+                                            "host": [
+                                                "{{host}}"
+                                            ],
+                                            "path": [
+                                                "{{project-key}}",
+                                                "product-variants",
+                                                "import-containers",
+                                                "{{import-container-key}}"
+                                            ],
+                                            "query": [
+                                            ]
+                                        },
+                                        "description": "Creates a request for creating new ProductVariants or updating existing ones.",
+                                        "body": {
+                                            "mode": "raw",
+                                            "raw": "{\n  \"type\" : \"product-variant\",\n  \"resources\" : [ {\n    \"key\" : \"red-t-shirt\",\n    \"sku\" : \"red-t-shirt\",\n    \"product\" : {\n      \"key\" : \"t-shirt\",\n      \"typeId\" : \"product\"\n    },\n    \"isMasterVariant\" : true,\n    \"attributes\" : [ {\n      \"name\" : \"new\",\n      \"type\" : \"boolean\",\n      \"value\" : true\n    }, {\n      \"name\" : \"weight\",\n      \"type\" : \"number\",\n      \"value\" : 12.5\n    } ],\n    \"assets\" : [ {\n      \"id\" : \"uuid-kafar7545792sd6r\",\n      \"key\" : \"uuid-kafar7545792sd6r\",\n      \"sources\" : [ {\n        \"uri\" : \"http:\/\/www.example.com\"\n      } ],\n      \"name\" : {\n        \"en\" : \"asset name\"\n      }\n    } ],\n    \"images\" : [ {\n      \"url\" : \"https:\/\/www.commercetools.com\/cli\/data\/253234387_1.jpg\",\n      \"dimensions\" : {\n        \"w\" : 1400,\n        \"h\" : 1400\n      },\n      \"label\" : \"tank top image Font\"\n    } ]\n  } ]\n}"
+                                        }
+                                    },
+                                    "response": []
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Product-variant-patches",
+                    "description": "null",
+                    "item": [
+                        {
+                            "name": "Import-containers",
+                            "description": "null",
+                            "item": [
+                                {
+                                    "name": "Import import-container",
+                                    "event": [
+                                        {
+                                            "listen": "test",
+                                            "script": {
+                                                "type": "text/javascript",
+                                                "exec": [
+                                                    "tests[\"Status code \" + responseCode.code] = responseCode.code === 200 || responseCode.code === 201;",
+                                                    "var data = JSON.parse(responseBody);",
+                                                    "if(data.results && data.results[0] && data.results[0].id && data.results[0].version){",
+                                                    "    pm.environment.set(\"import-container-id\", data.results[0].id); ",
+                                                    "    pm.environment.set(\"import-container-version\", data.results[0].version);",
+                                                    "}",
+                                                    "if(data.results && data.results[0] && data.results[0].key){",
+                                                    "    pm.environment.set(\"import-container-key\", data.results[0].key); ",
+                                                    "}",
+                                                    "if(data.version){",
+                                                    "    pm.environment.set(\"import-container-version\", data.version);",
+                                                    "}",
+                                                    "if(data.id){",
+                                                    "    pm.environment.set(\"import-container-id\", data.id); ",
+                                                    "}",
+                                                    "if(data.key){",
+                                                    "    pm.environment.set(\"import-container-key\", data.key);",
+                                                    "}",
+                                                    ""
+                                                ]
+                                            }
+                                        }
+                                    ],
+                                    "request": {
+                                        "auth":
+                                            {
+                                                "type": "oauth2",
+                                                "oauth2": {
+                                                    "accessToken": "{{ctp_access_token}}",
+                                                    "addTokenTo": "header",
+                                                    "tokenType": "Bearer"
+                                                }
+                                            },
+                                        "method": "post",
+                                        "header": [
+                                            {
+                                                "key": "Content-Type",
+                                                "value": "application/json"
+                                            }
+                                        ],
+                                        "url": {
+                                            "raw": "{{host}}/{{project-key}}/product-variant-patches/import-containers/{{import-container-key}}",
+                                            "host": [
+                                                "{{host}}"
+                                            ],
+                                            "path": [
+                                                "{{project-key}}",
+                                                "product-variant-patches",
+                                                "import-containers",
+                                                "{{import-container-key}}"
+                                            ],
+                                            "query": [
+                                            ]
+                                        },
+                                        "description": "Creates a new import request for product variant patches",
+                                        "body": {
+                                            "mode": "raw",
+                                            "raw": "{\n  \"type\" : \"product-variant-patch\",\n  \"patches\" : [ {\n    \"productVariant\" : {\n      \"typeId\" : \"product-variant\",\n      \"key\" : \"red-t-shirt\"\n    },\n    \"attributes\" : {\n      \"attribute-to-update\" : {\n        \"type\" : \"boolean\",\n        \"value\" : true\n      },\n      \"name-of-attribute-to-delete\" : {\n        \"annotations\" : [ ],\n        \"value\" : null\n      },\n      \"name-of-localized-attribute-to-update\" : {\n        \"type\" : \"ltext\",\n        \"value\" : {\n          \"en\" : \"Existing field\",\n          \"es\" : {\n            \"annotations\" : [ ],\n            \"value\" : null\n          },\n          \"de\" : \"Updating field\"\n        }\n      },\n      \"name-of-localized-attribute-set-to-update\" : {\n        \"type\" : \"ltext-set\",\n        \"value\" : [ {\n          \"en\" : \"Existing field\",\n          \"es\" : {\n            \"annotations\" : [ ],\n            \"value\" : null\n          },\n          \"de\" : \"Updating field\",\n          \"br\" : \"New field\"\n        }, {\n          \"en\" : \"Another Existing field\",\n          \"es\" : {\n            \"annotations\" : [ ],\n            \"value\" : null\n          },\n          \"de\" : \"Another Updating field\",\n          \"br\" : \"Another New field\"\n        } ]\n      }\n    },\n    \"staged\" : false\n  } ]\n}"
+                                        }
+                                    },
+                                    "response": []
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Orders",
+                    "description": "null",
+                    "item": [
+                        {
+                            "name": "Import-containers",
+                            "description": "null",
+                            "item": [
+                                {
+                                    "name": "Import import-container",
+                                    "event": [
+                                        {
+                                            "listen": "test",
+                                            "script": {
+                                                "type": "text/javascript",
+                                                "exec": [
+                                                    "tests[\"Status code \" + responseCode.code] = responseCode.code === 200 || responseCode.code === 201;",
+                                                    "var data = JSON.parse(responseBody);",
+                                                    "if(data.results && data.results[0] && data.results[0].id && data.results[0].version){",
+                                                    "    pm.environment.set(\"import-container-id\", data.results[0].id); ",
+                                                    "    pm.environment.set(\"import-container-version\", data.results[0].version);",
+                                                    "}",
+                                                    "if(data.results && data.results[0] && data.results[0].key){",
+                                                    "    pm.environment.set(\"import-container-key\", data.results[0].key); ",
+                                                    "}",
+                                                    "if(data.version){",
+                                                    "    pm.environment.set(\"import-container-version\", data.version);",
+                                                    "}",
+                                                    "if(data.id){",
+                                                    "    pm.environment.set(\"import-container-id\", data.id); ",
+                                                    "}",
+                                                    "if(data.key){",
+                                                    "    pm.environment.set(\"import-container-key\", data.key);",
+                                                    "}",
+                                                    ""
+                                                ]
+                                            }
+                                        }
+                                    ],
+                                    "request": {
+                                        "auth":
+                                            {
+                                                "type": "oauth2",
+                                                "oauth2": {
+                                                    "accessToken": "{{ctp_access_token}}",
+                                                    "addTokenTo": "header",
+                                                    "tokenType": "Bearer"
+                                                }
+                                            },
+                                        "method": "post",
+                                        "header": [
+                                            {
+                                                "key": "Content-Type",
+                                                "value": "application/json"
+                                            }
+                                        ],
+                                        "url": {
+                                            "raw": "{{host}}/{{project-key}}/orders/import-containers/{{import-container-key}}",
+                                            "host": [
+                                                "{{host}}"
+                                            ],
+                                            "path": [
+                                                "{{project-key}}",
+                                                "orders",
+                                                "import-containers",
+                                                "{{import-container-key}}"
+                                            ],
+                                            "query": [
+                                            ]
+                                        },
+                                        "description": "Creates a request for creating new Orders or updating existing ones.",
+                                        "body": {
+                                            "mode": "raw",
+                                            "raw": "{\n  \"type\" : \"order\",\n  \"resources\" : [ {\n    \"orderNumber\" : \"test-order-number\",\n    \"customer\" : {\n      \"typeId\" : \"customer\",\n      \"key\" : \"order-customer-key\"\n    },\n    \"customerEmail\" : \"customer-email@example.com\",\n    \"shippingInfo\" : {\n      \"shippingMethodName\" : \"string-name\",\n      \"price\" : {\n        \"type\" : \"centPrecision\",\n        \"currencyCode\" : \"EUR\",\n        \"centAmount\" : 300\n      },\n      \"shippingRate\" : {\n        \"price\" : {\n          \"type\" : \"centPrecision\",\n          \"currencyCode\" : \"EUR\",\n          \"centAmount\" : 3\n        },\n        \"tiers\" : [ ]\n      },\n      \"deliveries\" : [ {\n        \"id\" : \"4ce24c27-cce5-447c-890e-0d6b70b690ba\",\n        \"createdAt\" : \"2021-04-30T09:21:15.003Z\",\n        \"items\" : [ {\n          \"id\" : \"95a6e7a7-b74e-4397-b0b4-37473d2e3573\",\n          \"quantity\" : 4\n        } ],\n        \"parcels\" : [ {\n          \"id\" : \"98840afa-ac20-4a34-a904-88d3407e2d76\",\n          \"createdAt\" : \"2021-04-30T09:21:15.003Z\",\n          \"measurements\" : {\n            \"heightInMillimeter\" : 20,\n            \"lengthInMillimeter\" : 40,\n            \"widthInMillimeter\" : 5,\n            \"weightInGram\" : 10\n          }\n        } ]\n      } ]\n    },\n    \"lineItems\" : [ {\n      \"name\" : {\n        \"en\" : \"abc\"\n      },\n      \"quantity\" : 10,\n      \"price\" : {\n        \"value\" : {\n          \"type\" : \"centPrecision\",\n          \"centAmount\" : 100,\n          \"currencyCode\" : \"EUR\"\n        }\n      },\n      \"supplyChannel\" : {\n        \"typeId\" : \"channel\",\n        \"key\" : \"supplier-channel-key\"\n      },\n      \"variant\" : {\n        \"productVariant\" : {\n          \"typeId\" : \"product-variant\",\n          \"key\" : \"product-key\"\n        },\n        \"sku\" : \"variant-sku\",\n        \"attributes\" : [ ],\n        \"images\" : [ ],\n        \"prices\" : [ ]\n      }\n    } ],\n    \"customLineItems\" : [ {\n      \"name\" : {\n        \"en\" : \"name\"\n      },\n      \"totalPrice\" : {\n        \"type\" : \"centPrecision\",\n        \"centAmount\" : 123,\n        \"currencyCode\" : \"EUR\"\n      },\n      \"state\" : [ {\n        \"quantity\" : 10,\n        \"state\" : {\n          \"key\" : \"state-key\",\n          \"typeId\" : \"state\"\n        }\n      } ],\n      \"money\" : {\n        \"type\" : \"centPrecision\",\n        \"centAmount\" : 123,\n        \"currencyCode\" : \"EUR\"\n      },\n      \"quantity\" : 10,\n      \"slug\" : \"my-slug\",\n      \"taxCategory\" : {\n        \"typeId\" : \"tax-category\",\n        \"key\" : \"tax-category-key\"\n      },\n      \"discountedPricePerQuantity\" : [ {\n        \"value\" : {\n          \"type\" : \"centPrecision\",\n          \"centAmount\" : 123,\n          \"currencyCode\" : \"EUR\"\n        },\n        \"includedDiscounts\" : [ {\n          \"discountedAmount\" : {\n            \"type\" : \"centPrecision\",\n            \"centAmount\" : 123,\n            \"currencyCode\" : \"EUR\"\n          },\n          \"discount\" : {\n            \"typeId\" : \"cart-discount\",\n            \"key\" : \"cart-discount-key\"\n          }\n        } ]\n      } ]\n    } ],\n    \"customerGroup\" : {\n      \"typeId\" : \"customer-group\",\n      \"key\" : \"customer-group-key\"\n    },\n    \"totalPrice\" : {\n      \"type\" : \"centPrecision\",\n      \"currencyCode\" : \"EUR\",\n      \"centAmount\" : 4200\n    }\n  } ]\n}"
+                                        }
+                                    },
+                                    "response": []
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Order-patches",
+                    "description": "null",
+                    "item": [
+                        {
+                            "name": "Import-containers",
+                            "description": "null",
+                            "item": [
+                                {
+                                    "name": "Import import-container",
+                                    "event": [
+                                        {
+                                            "listen": "test",
+                                            "script": {
+                                                "type": "text/javascript",
+                                                "exec": [
+                                                    "tests[\"Status code \" + responseCode.code] = responseCode.code === 200 || responseCode.code === 201;",
+                                                    "var data = JSON.parse(responseBody);",
+                                                    "if(data.results && data.results[0] && data.results[0].id && data.results[0].version){",
+                                                    "    pm.environment.set(\"import-container-id\", data.results[0].id); ",
+                                                    "    pm.environment.set(\"import-container-version\", data.results[0].version);",
+                                                    "}",
+                                                    "if(data.results && data.results[0] && data.results[0].key){",
+                                                    "    pm.environment.set(\"import-container-key\", data.results[0].key); ",
+                                                    "}",
+                                                    "if(data.version){",
+                                                    "    pm.environment.set(\"import-container-version\", data.version);",
+                                                    "}",
+                                                    "if(data.id){",
+                                                    "    pm.environment.set(\"import-container-id\", data.id); ",
+                                                    "}",
+                                                    "if(data.key){",
+                                                    "    pm.environment.set(\"import-container-key\", data.key);",
+                                                    "}",
+                                                    ""
+                                                ]
+                                            }
+                                        }
+                                    ],
+                                    "request": {
+                                        "auth":
+                                            {
+                                                "type": "oauth2",
+                                                "oauth2": {
+                                                    "accessToken": "{{ctp_access_token}}",
+                                                    "addTokenTo": "header",
+                                                    "tokenType": "Bearer"
+                                                }
+                                            },
+                                        "method": "post",
+                                        "header": [
+                                            {
+                                                "key": "Content-Type",
+                                                "value": "application/json"
+                                            }
+                                        ],
+                                        "url": {
+                                            "raw": "{{host}}/{{project-key}}/order-patches/import-containers/{{import-container-key}}",
+                                            "host": [
+                                                "{{host}}"
+                                            ],
+                                            "path": [
+                                                "{{project-key}}",
+                                                "order-patches",
+                                                "import-containers",
+                                                "{{import-container-key}}"
+                                            ],
+                                            "query": [
+                                            ]
+                                        },
+                                        "description": "Creates a new import request for order patches",
+                                        "body": {
+                                            "mode": "raw",
+                                            "raw": "{\n  \"type\" : \"order-patch\",\n  \"patches\" : [ {\n    \"orderNumber\" : \"12345\",\n    \"fields\" : {\n      \"addReturnInfo\" : {\n        \"items\" : [ {\n          \"quantity\" : 1,\n          \"lineItemId\" : \"1\",\n          \"comment\" : \"any comment\",\n          \"shipmentState\" : \"Advised\"\n        } ],\n        \"returnTrackingId\" : \"returnTrackingId-example\",\n        \"returnDate\" : \"2021-04-30T09:21:15.003Z\"\n      },\n      \"addDeliveries\" : [ {\n        \"items\" : [ {\n          \"id\" : \"4ce24c27-cce5-447c-890e-0d6b70b690be\",\n          \"quantity\" : 5\n        } ],\n        \"parcels\" : [ {\n          \"measurements\" : {\n            \"heightInMillimeter\" : 20,\n            \"lengthInMillimeter\" : 40,\n            \"widthInMillimeter\" : 5,\n            \"weightInGram\" : 10\n          }\n        } ]\n      } ],\n      \"removeDelivery\" : {\n        \"id\" : \"95a6e7a7-b74e-4397-b0b4-37473d2e3573\"\n      },\n      \"removeParcelFromDelivery\" : {\n        \"parcelId\" : \"98840afa-ac20-4a34-a904-88d3407e2d76\"\n      },\n      \"addParcelToDelivery\" : {\n        \"deliveryId\" : \"95a6e7a7-b74e-4397-b0b4-37473d2e3573\",\n        \"measurements\" : {\n          \"heightInMillimeter\" : 20,\n          \"lengthInMillimeter\" : 40,\n          \"widthInMillimeter\" : 5,\n          \"weightInGram\" : 10\n        }\n      },\n      \"setParcelMeasurements\" : {\n        \"parcelId\" : \"98840afa-ac20-4a34-a904-88d3407e2d76\",\n        \"measurements\" : {\n          \"heightInMillimeter\" : 20,\n          \"lengthInMillimeter\" : 40,\n          \"widthInMillimeter\" : 5,\n          \"weightInGram\" : 10\n        }\n      },\n      \"setParcelTrackingData\" : {\n        \"parcelId\" : \"98840afa-ac20-4a34-a904-88d3407e2d76\",\n        \"trackingData\" : {\n          \"carrier\" : \"carrier data\"\n        }\n      },\n      \"setParcelItems\" : [ {\n        \"parcelId\" : \"98840afa-ac20-4a34-a904-88d3407e2d76\",\n        \"items\" : [ {\n          \"id\" : \"4ce24c27-cce5-447c-890e-0d6b70b690be\",\n          \"quantity\" : 5\n        } ]\n      } ]\n    }\n  } ]\n}"
+                                        }
+                                    },
+                                    "response": []
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Customers",
+                    "description": "null",
+                    "item": [
+                        {
+                            "name": "Import-containers",
+                            "description": "null",
+                            "item": [
+                                {
+                                    "name": "Import import-container",
+                                    "event": [
+                                        {
+                                            "listen": "test",
+                                            "script": {
+                                                "type": "text/javascript",
+                                                "exec": [
+                                                    "tests[\"Status code \" + responseCode.code] = responseCode.code === 200 || responseCode.code === 201;",
+                                                    "var data = JSON.parse(responseBody);",
+                                                    "if(data.results && data.results[0] && data.results[0].id && data.results[0].version){",
+                                                    "    pm.environment.set(\"import-container-id\", data.results[0].id); ",
+                                                    "    pm.environment.set(\"import-container-version\", data.results[0].version);",
+                                                    "}",
+                                                    "if(data.results && data.results[0] && data.results[0].key){",
+                                                    "    pm.environment.set(\"import-container-key\", data.results[0].key); ",
+                                                    "}",
+                                                    "if(data.version){",
+                                                    "    pm.environment.set(\"import-container-version\", data.version);",
+                                                    "}",
+                                                    "if(data.id){",
+                                                    "    pm.environment.set(\"import-container-id\", data.id); ",
+                                                    "}",
+                                                    "if(data.key){",
+                                                    "    pm.environment.set(\"import-container-key\", data.key);",
+                                                    "}",
+                                                    ""
+                                                ]
+                                            }
+                                        }
+                                    ],
+                                    "request": {
+                                        "auth":
+                                            {
+                                                "type": "oauth2",
+                                                "oauth2": {
+                                                    "accessToken": "{{ctp_access_token}}",
+                                                    "addTokenTo": "header",
+                                                    "tokenType": "Bearer"
+                                                }
+                                            },
+                                        "method": "post",
+                                        "header": [
+                                            {
+                                                "key": "Content-Type",
+                                                "value": "application/json"
+                                            }
+                                        ],
+                                        "url": {
+                                            "raw": "{{host}}/{{project-key}}/customers/import-containers/{{import-container-key}}",
+                                            "host": [
+                                                "{{host}}"
+                                            ],
+                                            "path": [
+                                                "{{project-key}}",
+                                                "customers",
+                                                "import-containers",
+                                                "{{import-container-key}}"
+                                            ],
+                                            "query": [
+                                            ]
+                                        },
+                                        "description": "Creates a request for creating new Customers or updating existing ones.",
+                                        "body": {
+                                            "mode": "raw",
+                                            "raw": "{\n  \"type\" : \"customer\",\n  \"resources\" : [ {\n    \"customerNumber\" : \"12345\",\n    \"email\" : \"alice@example.com\",\n    \"password\" : \"secret\",\n    \"firstName\" : \"Alice\",\n    \"lastName\" : \"Doe\",\n    \"middleName\" : \"Ruth\",\n    \"title\" : \"Ms.\",\n    \"dateOfBirth\" : \"1980-01-01\",\n    \"companyName\" : \"commercetools GmbH\",\n    \"vatId\" : \"123456789\",\n    \"addresses\" : [ {\n      \"key\" : \"wCVKP6iU\",\n      \"firstName\" : \"Alice\",\n      \"country\" : \"DE\"\n    }, {\n      \"key\" : \"en-wcvK6\",\n      \"firstName\" : \"Alice\",\n      \"country\" : \"US\"\n    } ],\n    \"defaultShippingAddress\" : 0,\n    \"shippingAddresses\" : [ 0, 1 ],\n    \"defaultBillingAddress\" : 0,\n    \"billingAddresses\" : [ 0, 1 ],\n    \"isEmailVerified\" : false,\n    \"externalId\" : \"external-id-123\",\n    \"customerGroup\" : {\n      \"typeId\" : \"customer-group\",\n      \"key\" : \"customer-group-key\"\n    },\n    \"custom\" : {\n      \"type\" : {\n        \"key\" : \"custom-type\",\n        \"typeId\" : \"type\"\n      },\n      \"fields\" : {\n        \"boolean-field\" : {\n          \"type\" : \"Boolean\",\n          \"value\" : true\n        }\n      }\n    },\n    \"locale\" : \"DE\",\n    \"salutation\" : \"Dr.\",\n    \"key\" : \"customer-import-resource-key\",\n    \"stores\" : [ {\n      \"typeId\" : \"store\",\n      \"key\" : \"store-key\"\n    } ]\n  } ]\n}"
+                                        }
+                                    },
+                                    "response": []
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Inventories",
+                    "description": "null",
+                    "item": [
+                        {
+                            "name": "Import-containers",
+                            "description": "null",
+                            "item": [
+                                {
+                                    "name": "Import import-container",
+                                    "event": [
+                                        {
+                                            "listen": "test",
+                                            "script": {
+                                                "type": "text/javascript",
+                                                "exec": [
+                                                    "tests[\"Status code \" + responseCode.code] = responseCode.code === 200 || responseCode.code === 201;",
+                                                    "var data = JSON.parse(responseBody);",
+                                                    "if(data.results && data.results[0] && data.results[0].id && data.results[0].version){",
+                                                    "    pm.environment.set(\"import-container-id\", data.results[0].id); ",
+                                                    "    pm.environment.set(\"import-container-version\", data.results[0].version);",
+                                                    "}",
+                                                    "if(data.results && data.results[0] && data.results[0].key){",
+                                                    "    pm.environment.set(\"import-container-key\", data.results[0].key); ",
+                                                    "}",
+                                                    "if(data.version){",
+                                                    "    pm.environment.set(\"import-container-version\", data.version);",
+                                                    "}",
+                                                    "if(data.id){",
+                                                    "    pm.environment.set(\"import-container-id\", data.id); ",
+                                                    "}",
+                                                    "if(data.key){",
+                                                    "    pm.environment.set(\"import-container-key\", data.key);",
+                                                    "}",
+                                                    ""
+                                                ]
+                                            }
+                                        }
+                                    ],
+                                    "request": {
+                                        "auth":
+                                            {
+                                                "type": "oauth2",
+                                                "oauth2": {
+                                                    "accessToken": "{{ctp_access_token}}",
+                                                    "addTokenTo": "header",
+                                                    "tokenType": "Bearer"
+                                                }
+                                            },
+                                        "method": "post",
+                                        "header": [
+                                            {
+                                                "key": "Content-Type",
+                                                "value": "application/json"
+                                            }
+                                        ],
+                                        "url": {
+                                            "raw": "{{host}}/{{project-key}}/inventories/import-containers/{{import-container-key}}",
+                                            "host": [
+                                                "{{host}}"
+                                            ],
+                                            "path": [
+                                                "{{project-key}}",
+                                                "inventories",
+                                                "import-containers",
+                                                "{{import-container-key}}"
+                                            ],
+                                            "query": [
+                                            ]
+                                        },
+                                        "description": "Creates a request for creating new Inventories or updating existing ones.",
+                                        "body": {
+                                            "mode": "raw",
+                                            "raw": "{\n  \"type\" : \"inventory\",\n  \"resources\" : [ {\n    \"key\" : \"inventory-import-key\",\n    \"sku\" : \"product-variant-sku\",\n    \"quantityOnStock\" : 15,\n    \"restockableInDays\" : 2,\n    \"expectedDelivery\" : \"2022-06-30T14:00:00.000Z\",\n    \"supplyChannel\" : {\n      \"typeId\" : \"channel\",\n      \"key\" : \"channel-key\"\n    },\n    \"custom\" : {\n      \"type\" : {\n        \"typeId\" : \"type\",\n        \"key\" : \"custom-field-key\"\n      },\n      \"fields\" : {\n        \"theNameofTheInventoryCustomField\" : {\n          \"type\" : \"LocalizedString\",\n          \"value\" : {\n            \"en\" : \"English text\",\n            \"de\" : \"German text\"\n          }\n        }\n      }\n    }\n  } ]\n}"
+                                        }
+                                    },
+                                    "response": []
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
